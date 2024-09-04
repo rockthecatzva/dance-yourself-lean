@@ -22,6 +22,7 @@
         - timeline component
         - entry for movements
         - rewind & edit timeline placement
+        - needs to be in both 2d/3d
 - create simple "targets"
 - can i apply a scoring system  
     - timing  
@@ -61,3 +62,17 @@
 
 - group/party/class mode
     - graphical reward for more participants
+
+
+
+
+
+# CONNECTING TO LOCALHOST:
+`ifconfig | grep "inet " | grep -v 127.0.0.1`
+- need to config port forwarding in chrome?
+
+add this to start command! 
+`--host 0.0.0.0`
+
+this works on quest!
+http://192.168.86.240:8000/
