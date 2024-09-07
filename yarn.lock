@@ -3585,6 +3585,11 @@ babel-preset-jest@^27.5.1:
     babel-plugin-jest-hoist "^27.5.1"
     babel-preset-current-node-syntax "^1.0.0"
 
+babylonjs@^7.24.0:
+  version "7.24.0"
+  resolved "https://registry.yarnpkg.com/babylonjs/-/babylonjs-7.24.0.tgz#de68fa26f835bb8c31c1f5704ff446c0ef3d9141"
+  integrity sha512-/ZP/8y1UqsHIZZaLvm5uYN3YjdHjltCHpK3m6IVTPFb5dfO7CkCc3sutLxl/YYavG59+7maWP7c4FOYZFPabSg==
+
 balanced-match@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
@@ -11950,7 +11955,7 @@ text-table@^0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=
 
-"three-bmfont-text@github:dmarcos/three-bmfont-text#eed4878795be9b3e38cf6aec6b903f56acd1f695":
+three-bmfont-text@dmarcos/three-bmfont-text#eed4878795be9b3e38cf6aec6b903f56acd1f695:
   version "3.0.0"
   resolved "https://codeload.github.com/dmarcos/three-bmfont-text/tar.gz/eed4878795be9b3e38cf6aec6b903f56acd1f695"
   dependencies:

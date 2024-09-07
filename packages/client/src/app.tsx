@@ -5,15 +5,15 @@ const App_ = () => {
   return (
     <div>
       hEllo batman joker
-      <Player />
+      {/* <Player /> */}
     </div>
   );
 };
 
-const onPlayerReady: YouTubeProps["onReady"] = (event) => {
-  // access to player in all event handlers via event.target
-  // event.target.pauseVideo();
-};
+// const onPlayerReady: YouTubeProps["onReady"] = (event) => {
+//   // access to player in all event handlers via event.target
+//   // event.target.pauseVideo();
+// };
 
 const opts: YouTubeProps["opts"] = {
   height: "390",
