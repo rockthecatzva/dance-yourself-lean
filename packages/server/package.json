@@ -1,0 +1,28 @@
+{
+  "name": "@stonko/server",
+  "version": "1.0.0-alpha",
+  "description": "Button",
+  "author": "stonko <stonko@stonko.org>",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf coverage lib",
+    "lint": "eslint .",
+    "lint:fix": "yarn lint --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "dev": "nodemon --config nodemon.json src/index.ts",
+    "start": "ts-node src/index.ts"
+  },
+  "peerDependencies": {
+  },
+  "dependencies": {
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT"
+}
