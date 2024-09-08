@@ -15,7 +15,7 @@ const getBar = (x, y, width, height, color, index) => {
     context.lineWidth = width;
     context.save();
     context.beginPath();
-    context.rect(x, y, height, width)
+    context.rect(x, y, height, width);
     context.stroke();
     context.restore();
   };
@@ -23,14 +23,20 @@ const getBar = (x, y, width, height, color, index) => {
   return { update, draw };
 };
 
-const getMicrophone = async ({ fftSize, setMicInit }) => {
+const getMicrophone = async ({ fftSize, setMicInit, setError }) => {
   //   let initialized = false;
   let analyser;
   let dataArray;
-
+  const t = JSON.stringify(
+    navigator.mediaDevices.getUserMedia({ audio: true })
+  );
+  console.log("**** TEST ", t);
+  setError(t);
   navigator.mediaDevices
     .getUserMedia({ audio: true })
     .then(function (stream) {
+      setError("then");
+
       const audioContext = new AudioContext();
       const microphone = audioContext.createMediaStreamSource(stream);
       analyser = audioContext.createAnalyser();
@@ -40,9 +46,11 @@ const getMicrophone = async ({ fftSize, setMicInit }) => {
       microphone.connect(analyser);
       //   initialized = true;
       setMicInit(true);
+      setError("Mic init!");
       console.log("*** mic is init");
     })
     .catch(function (err) {
+      setError("TRUE");
       alert(err);
     });
 
@@ -80,6 +88,8 @@ export const AudioAnalyze = () => {
   const [canvas, setCanvas] = useState<null | HTMLCanvasElement>(null);
   const [ctx, setCtx] = useState<null | CanvasRenderingContext2D>(null);
   const [micInit, setMicInit] = useState(false);
+  const [val, setVal] = useState(0);
+  const [err, setError] = useState("ok");
 
   useEffect(() => {
     const _canvas = document.getElementById("meter") as HTMLCanvasElement;
@@ -94,11 +104,11 @@ export const AudioAnalyze = () => {
 
     const m = async () => {
       let fftSize = 512;
-      const microphone = await getMicrophone({ fftSize, setMicInit });
+      const microphone = await getMicrophone({ fftSize, setMicInit, setError });
       setMic(microphone);
       function createBars() {
         for (let i = 1; i < fftSize / 2; i++) {
-        //   let color = "hsl(" + i * 2 + ",100%, 50%)";
+          //   let color = "hsl(" + i * 2 + ",100%, 50%)";
           bars.push(getBar(0, i * 0.9, 0.5, 0, "red", i));
         }
       }
@@ -112,20 +122,19 @@ export const AudioAnalyze = () => {
 
   useEffect(() => {
     function animate() {
-    //   console.log(" *** amimate ", mic);
+      //   console.log(" *** amimate ", mic);
       if (micInit && mic && ctx) {
-        console.log("*** ", canvas!.width)
         ctx.clearRect(0, 0, canvas!.width, canvas!.height);
         const samples = mic.getSamples();
         const volume = mic.getVolume();
         ctx.save();
         ctx.translate(canvas!.width / 2 - 70, canvas!.height / 2 + 50);
         bars.forEach(function (bar, i) {
-            bar.update(samples[i]);
-            bar.draw(ctx);
+          bar.update(samples[i]);
+          bar.draw(ctx);
         });
         ctx.restore();
-
+        setVal(samples[10]);
         softVolume = softVolume * 0.9 + volume * 0.1;
         requestAnimationFrame(animate);
       }
@@ -137,6 +146,8 @@ export const AudioAnalyze = () => {
     <div>
       audio
       <canvas id="meter" width="500" height="50"></canvas>
+      <div>{val}</div>
+      <div>{err}</div>
     </div>
   );
 };

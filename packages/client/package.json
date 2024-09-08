@@ -6,7 +6,7 @@
   "main": "lib/index.js",
   "type": "commonjs",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist/* && webpack",
     "clean": "rm -rf coverage lib",
     "lint": "eslint .",
     "lint:fix": "yarn lint --fix",
