@@ -1,94 +1,20 @@
 import { useEffect, useState } from "react";
-
-const getBar = (x, y, width, height, color, index) => {
-  const update = (micInput) => {
-    const sound = micInput * 300;
-    if (sound > height) {
-      height = sound;
-    } else {
-      height -= height * 0.03;
-    }
-  };
-
-  const draw = (context) => {
-    context.strokeStyle = color;
-    context.lineWidth = width;
-    context.save();
-    context.beginPath();
-    context.rect(x, y, height, width);
-    context.stroke();
-    context.restore();
-  };
-
-  return { update, draw };
-};
-
-const getMicrophone = async ({ fftSize, setMicInit, setError }) => {
-  //   let initialized = false;
-  let analyser;
-  let dataArray;
-  const t = JSON.stringify(
-    navigator.mediaDevices.getUserMedia({ audio: true })
-  );
-  console.log("**** TEST ", t);
-  setError(t);
-  navigator.mediaDevices
-    .getUserMedia({ audio: true })
-    .then(function (stream) {
-      setError("then");
-
-      const audioContext = new AudioContext();
-      const microphone = audioContext.createMediaStreamSource(stream);
-      analyser = audioContext.createAnalyser();
-      analyser.fftSize = fftSize;
-      const bufferLength = analyser.frequencyBinCount;
-      dataArray = new Uint8Array(bufferLength);
-      microphone.connect(analyser);
-      //   initialized = true;
-      setMicInit(true);
-      setError("Mic init!");
-      console.log("*** mic is init");
-    })
-    .catch(function (err) {
-      setError("TRUE");
-      alert(err);
-    });
-
-  const getSamples = () => {
-    analyser.getByteTimeDomainData(dataArray);
-    let normSamples = [...dataArray].map((e) => e / 128 - 1);
-    return normSamples;
-  };
-
-  const getVolume = () => {
-    analyser.getByteTimeDomainData(dataArray);
-    let normSamples = [...dataArray].map((e) => e / 128 - 1);
-    let sum = 0;
-
-    for (let i = 0; i < normSamples.length; i++) {
-      sum += normSamples[i] * normSamples[i];
-    }
-    let volume = Math.sqrt(sum / normSamples.length);
-    return volume;
-  };
-
-  return { getSamples, getVolume };
-};
+import { getMicrophone, GetMicrophoneResult } from "./audio-helpers";
+import { getBar } from "./canvas-helpers";
 
 let bars: Array<any> = [];
 let softVolume = 0;
 const width = 500;
 const height = 200;
+const fftSize = 128;
+const barW = width / fftSize;
 
 export const AudioAnalyze = () => {
-  const [mic, setMic] = useState<null | {
-    getSamples: () => number[];
-    getVolume: () => number;
-  }>(null);
+  const [mic, setMic] = useState<null | GetMicrophoneResult>(null);
   const [canvas, setCanvas] = useState<null | HTMLCanvasElement>(null);
   const [ctx, setCtx] = useState<null | CanvasRenderingContext2D>(null);
   const [micInit, setMicInit] = useState(false);
-  const [val, setVal] = useState(0);
+  // const [val, setVal] = useState(0);
   const [err, setError] = useState("ok");
 
   useEffect(() => {
@@ -103,18 +29,28 @@ export const AudioAnalyze = () => {
     }
 
     const m = async () => {
-      let fftSize = 512;
       const microphone = await getMicrophone({ fftSize, setMicInit, setError });
       setMic(microphone);
       function createBars() {
-        for (let i = 1; i < fftSize / 2; i++) {
+        for (let i = 1; i < fftSize; i++) {
           //   let color = "hsl(" + i * 2 + ",100%, 50%)";
-          bars.push(getBar(0, i * 0.9, 0.5, 0, "red", i));
+          console.log("** b", i * barW);
+          bars.push(
+            getBar({
+              x: i * barW,
+              y: 0,
+              width: barW,
+              color: "red",
+              height: height - 20,
+              index: i,
+              maxH: height-10,
+            })
+          );
         }
       }
       createBars();
 
-      console.log("** ", canvas, microphone, bars);
+      // console.log("** ", canvas, microphone, bars);
     };
 
     m();
@@ -126,16 +62,17 @@ export const AudioAnalyze = () => {
       if (micInit && mic && ctx) {
         ctx.clearRect(0, 0, canvas!.width, canvas!.height);
         const samples = mic.getSamples();
-        const volume = mic.getVolume();
+        // const volume = mic.getVolume();
+        const freq = mic.getFrequencies();
         ctx.save();
-        ctx.translate(canvas!.width / 2 - 70, canvas!.height / 2 + 50);
+        // ctx.translate(canvas!.width / 2 - 70, canvas!.height / 2 + 50);
         bars.forEach(function (bar, i) {
-          bar.update(samples[i]);
+          bar.update(freq[i], i);
           bar.draw(ctx);
         });
         ctx.restore();
-        setVal(samples[10]);
-        softVolume = softVolume * 0.9 + volume * 0.1;
+        // setVal(freq[10]);
+        // softVolume = softVolume * 0.9 + volume * 0.1;
         requestAnimationFrame(animate);
       }
     }
@@ -145,8 +82,13 @@ export const AudioAnalyze = () => {
   return (
     <div>
       audio
-      <canvas id="meter" width="500" height="50"></canvas>
-      <div>{val}</div>
+      <canvas
+        style={{ border: "solid 1px black" }}
+        id="meter"
+        width="500"
+        height="50"
+      ></canvas>
+      {/* <div>{val}</div> */}
       <div>{err}</div>
     </div>
   );

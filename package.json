@@ -16,8 +16,7 @@
     "server-dev": "lerna run --stream --scope=@stonko/server dev",
     "build-server": "lerna run --scope=@stonko/server build",
     "start-client": "lerna run --stream --scope=@stonko/client start",
-    "build-client": "lerna run --stream --scope=@stonko/client build",
-    "serve-client": "http-server /packages/client/dist  -S -C cert.pem -o"
+    "build-client": "lerna run --stream --scope=@stonko/client build"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.1",
